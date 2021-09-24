@@ -23,10 +23,15 @@ func newSchoolHandler() *SchoolHandler {
 }
 
 func (h *SchoolHandler) healthCheck(w http.ResponseWriter, r *http.Request) {
+	enableCors(w)
 	w.WriteHeader(http.StatusOK)
 }
 func (h *SchoolHandler) searchHandler(w http.ResponseWriter, r *http.Request) {
+	enableCors(w)
 	switch {
+	case r.Method == "OPTIONS" || r.Method == "options":
+		enableCors(w)
+		w.WriteHeader(http.StatusAccepted)
 	case r.Method == "get" || r.Method == "GET":
 		err := r.ParseForm()
 		if err != nil {
@@ -57,6 +62,7 @@ func (h *SchoolHandler) searchHandler(w http.ResponseWriter, r *http.Request) {
 		schoolRes, err := schoolController.Search(queryParams.params.Get("name"))
 
 		if err != nil {
+			fmt.Printf("Error!! %e", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			msg, _ := json.Marshal(common.ErrorResponse{
 				Message: "An error has occured while searching",
@@ -68,11 +74,18 @@ func (h *SchoolHandler) searchHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err)
 		}
+		w.Header().Add("Content-Type", "application/json")
 
 		w.Write(resp)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
+}
+
+func enableCors(w http.ResponseWriter) {
+	(w).Header().Set("Access-Control-Allow-Origin", "*")
+	(w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(w).Header().Set("Access-Control-Allow-Headers", "*")
 }
 
 func SetupRoutes() {

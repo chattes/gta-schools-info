@@ -8,6 +8,7 @@ type School struct {
 	Id           int     `json:"id,omitempty"`
 	URL          string  `json:"url,omitempty"`
 	Name         string  `json:"name,omitempty"`
+	SchoolId     string  `json:"school_id,omitempty"`
 	Type         string  `json:"type,omitempty"`
 	IsCatholic   bool    `json:"is_catholic,omitempty"`
 	Language     string  `json:"language,omitempty"`
